@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "massive-audio",
+  "private_key_id": "c7ee0e579cd4152b69434285ba4e5697de53d7ca",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDGjUCsU+hO+0L6\ncyFSCuTjpZZ274UyVgljjfrsVs60X8kJ8COkT2gDMb76hSOllfWUmBsalrcVUNcr\nGysGhz2pED4Kucgo+oEtZC4UDJjSNV7cQrBBBEkAUp6HcEplGGPPizChgePjpCKa\nWkhwe/9Fa3lAaDjz6ens7C/Fl1HHN3e1EsBYcY7cLKFFnAKgngPMqjVSy1doXWrz\n4xgloIPFkiF2iPPRJZNizu0IaXQIeuXAU/tldvCztfmKrKhzZSg5R1wT74280iSn\necODvglJ/3v+kqyNTMtWi7gFcoqB2Zog5KPVUKkCf6/ZUiU2usPgbYOuVU8gE4JR\n0pp/R1w9AgMBAAECggEAExGBwosUZnFvD0p7SrvNG6fNeYKrUhg9MphyHrx/gYcp\ncZDke2U84gGnC7w5ni92tFyfTcBnuN5Yq8UiLrBSVag/rRwGgxj7yvYyDq7fBmEl\nyRWGg9f7gtJscylvm6HqBAakFv64eiZLRHOjPVpLO8mEjZD010gBtUVBmUJdEjqv\n+OjFEafBROzHfO+siYpQQr/ZpaihVLgfY+Q6LJzXhtmYii4JYX1y/ehNVZh4NHQO\nY9VM3Zm2v6R5ewPQ7DD69KCXhJ7Ue0HjkuGQ/x3WuF6QaVYFvYXrWhL8nX27vU04\nownDQmm/bF85Z6+8/Wimfr/wg3lunT9SgfGCExtAAQKBgQD5LnpkkDofNCRI573q\nofQ4XaxXoPabaXNMZioo16qSk87x1g988UG1u+Bpkqg0j/RtEqflcp/26ybyewCr\n2ecrG0857TrGe57RITpZKdBNoVvnyT0J54RC9uFdyZCSqDPQe0DtX//gV1eyXvbn\n+xra7OFSm0nPB2yZzhcvMrDoAQKBgQDL/ByhURcvXUW+4DhUThrgIkbRgzUsCZff\nbXFthXrG0zDyycaEpDqP/dbfTiWOqmFsj+lkp/oFr7KxgS4QSQspOShdz5GsPmts\nD1pYq8+49z/lj0l4hzXoxUEkcaObJ0uTdYwHT3K2XE3oNZJIp/5wgBkdflggPdSN\n15m9mQAUPQKBgQCSCWxPzbtSmFN/qtnCTmJ8OmIMBVkiYh3hs6qXvzXHq/rH/yWa\nmyZgpRhzpzEPhSLCXgGqVpBrvQtZZz9QeGej+uBm2aLtunusoyW4Jepf5OahJG6y\nhE4elOQl/EDPwuaDFAlMVUv4JhhOgJuB/8eQcO3pZPtP61D5nzA1SCcoAQKBgQC6\nUKiF399hb7xIv9wzhLOfjS9KJqHme0yw0vILqyOdf0DyQcKFXMvwwVYF2QcM7CrY\nUgpH2fXQQ87furIsRctf98kbBoBz5v+PT+ahnyy4MX23W80rvbRLy//YHcPl71pk\ncbVY6ARK9LxkIKpgmrEYaKiH++LacB84/3h5aMpdsQKBgGIsZb6/DC0bqsL/kD8s\nX9c255tDBAlbo/lUsyrP715i7nsbVSqgXUyVGyJorXV/5fTiGq7lOkVvs1/6vOVk\n8gSij1iH3sJv0CAXFlM2SkzD2I2HHtXfT1VskFqA1HfkSBKRLWjQe++x+yAlFKlD\nhva7u9OqkS3s8NYubL/k9+d4\n-----END PRIVATE KEY-----\n",
+  "client_email": "massive-audio@massive-audio.iam.gserviceaccount.com",
+  "client_id": "104929141078695354637",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://accounts.google.com/o/oauth2/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/massive-audio%40massive-audio.iam.gserviceaccount.com"
+}
