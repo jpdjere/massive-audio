@@ -63,8 +63,7 @@ router.get('/api/google-speech-to-text', function (req, res) {//solo para prueba
 
     let encoded_url_address = req.query.url_address;
     let unencoded_url_address = decodeURIComponent(encoded_url_address);
-    // The name of the audio file to transcribe
-    const fileName = 'gs://clarin-videos/audio.flac';
+
     /*
     let bucket_name = "clarin-videos";
 
@@ -93,10 +92,7 @@ router.get('/api/google-speech-to-text', function (req, res) {//solo para prueba
         console.log(response.headers['content-type']) // 'image/png'
         console.log(JSON.stringify(response,null,2));
 
-        speechRecognition()
-          .then(() => {
-            console.log("Termino todo.");
-          })
+
       })
       */
 
@@ -122,6 +118,9 @@ router.get('/api/google-speech-to-text', function (req, res) {//solo para prueba
 
       }
 
+      let flacFilePathName = 'public/audios/audio-'+Date.now()+'.flac';
+      let flacFileName = flacFilePathName.split("/")[flacFilePathName.split("/").length-1];
+
       let convertAudio = () => {
         return new Promise(
           (resolve, reject) => {
@@ -133,10 +132,14 @@ router.get('/api/google-speech-to-text', function (req, res) {//solo para prueba
                 video
                 .setAudioCodec('flac')
                 // .setAudioFrequency(48,function(error,file){
-                .setAudioChannels(2)
-                .save('public/audios/audio-upload.flac', function (error, file) {
+                .setAudioChannels(1)
+                .save(flacFilePathName, function (error, file) {
                   if (!error)
                   console.log('Converted audio file: ' + file);
+                  console.log('Deleting old file:' + audioFileName);
+                  fs.unlink(audioFileName,function(){
+                    console.log("Deleted file");
+                  })
                   resolve();
                 });
               }, function (err) {
@@ -153,32 +156,45 @@ router.get('/api/google-speech-to-text', function (req, res) {//solo para prueba
 
       let bucket = gcs.bucket('clarin-videos');
       let uploadGCS = () => {
-        //Uploads the file
-        bucket.upload('public/audios/audio-upload.flac', function(err, file) {
-          if (!err) {
-            console.log(`Uploaded ${file} to GCS`);
+        return new Promise(
+          (resolve, reject) => {
+            //Uploads the file
+            bucket.upload(flacFilePathName, function(err, file) {
+              if (!err) {
+                console.log(`Uploaded ${file} to GCS`);
 
-            // Makes the file public
-            gcs
-              .bucket('clarin-videos')
-              .file('audio-upload.flac')
-              .makePublic();
+                // Makes the file public
+                gcs
+                  .bucket('clarin-videos')
+                  .file(flacFileName)
+                  .makePublic();
 
-          }else{
-            console.log("There was an error uploading the file");
-            console.log(err);
-          }
+                  console.log('Deleting old flac file:' + flacFilePathName);
+                  fs.unlink(flacFilePathName,function(){
+                    console.log("Deleted FLAC file");
+                    resolve();
+                  })
 
-        });
 
-      }
+              }else{
+                console.log("There was an error uploading the file");
+                console.log(err);
+              }
+
+            });
+
+          })
+        }
 
 
       extractAudio(unencoded_url_address)
         .then(() => {
           convertAudio()
             .then(() => {
-              uploadGCS();
+              uploadGCS()
+                .then(() => {
+                  speechRecognition();
+                })
             })
 
         })
@@ -247,13 +263,13 @@ router.get('/api/google-speech-to-text', function (req, res) {//solo para prueba
 
 
     let speechRecognition = () => {
-      console.log("entre a speech recognition");
+      console.log("Entre a speech recognition");
       let analyzedText = {};
       return new Promise(
         (resolve, reject) => {
 
           // Detects speech in the audio file
-          speechClient.startRecognition(fileName, options)
+          speechClient.startRecognition(flacFileName, options)
           .then((results) => {
 
             const operation = results[0];
