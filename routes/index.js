@@ -101,6 +101,7 @@ router.get('/api/google-speech-to-text', function (req, res) {//solo para prueba
       */
 
       let audioFileName = 'public/audios/audio-'+Date.now()+'.aac';
+      // let audioFileName = 'public/audios/audio-upload.aac';
       const ytdl = require('ytdl-core');
 
       let extractAudio = (url) => {
@@ -111,7 +112,7 @@ router.get('/api/google-speech-to-text', function (req, res) {//solo para prueba
               filter: "audioonly"
             }).pipe(fs.createWriteStream(audioFileName));
 
-            youtube.on('end',function() {
+            youtube.on('finish',function() {
               console.log("Finished extracting audio");
               resolve();
             })
@@ -121,12 +122,48 @@ router.get('/api/google-speech-to-text', function (req, res) {//solo para prueba
 
       }
 
+      let convertAudio = () => {
+        return new Promise(
+          (resolve, reject) => {
+            const ffmpeg = require('ffmpeg');
+            try {
+              var process = new ffmpeg(audioFileName);
+              process.then(function (video) {
+                // Callback mode
+                video
+                .setAudioCodec('flac')
+                // .setAudioFrequency(48,function(error,file){
+                .setAudioChannels(2)
+                .save('public/audios/audio-upload.flac', function (error, file) {
+                  if (!error)
+                  console.log('Converted audio file: ' + file);
+                  resolve();
+                });
+              }, function (err) {
+                console.log('Error: ' + err);
+                reject("Error on process");
+              });
+            } catch (e) {
+              console.log(e.code);
+              console.log(e.msg);
+              reject("Error on try process");
+            }
+          })
+      }
+
       let bucket = gcs.bucket('clarin-videos');
       let uploadGCS = () => {
-        console.log("Entered GCS function");
-        bucket.upload(audioFileName, function(err, file) {
+        //Uploads the file
+        bucket.upload('public/audios/audio-upload.flac', function(err, file) {
           if (!err) {
             console.log(`Uploaded ${file} to GCS`);
+
+            // Makes the file public
+            gcs
+              .bucket('clarin-videos')
+              .file('audio-upload.flac')
+              .makePublic();
+
           }else{
             console.log("There was an error uploading the file");
             console.log(err);
@@ -136,9 +173,17 @@ router.get('/api/google-speech-to-text', function (req, res) {//solo para prueba
 
       }
 
+
       extractAudio(unencoded_url_address)
         .then(() => {
-          uploadGCS();
+          convertAudio()
+            .then(() => {
+              uploadGCS();
+            })
+
+        })
+        .catch((e) => {
+          console.log(e);
         })
 
 
