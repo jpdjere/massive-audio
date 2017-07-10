@@ -64,151 +64,112 @@ router.get('/api/google-speech-to-text', function (req, res) {//solo para prueba
     let encoded_url_address = req.query.url_address;
     let unencoded_url_address = decodeURIComponent(encoded_url_address);
 
-    /*
-    let bucket_name = "clarin-videos";
+    let audioFileName = 'public/audios/audio-'+Date.now()+'.aac';
+    // let audioFileName = 'public/audios/audio-upload.aac';
+    const ytdl = require('ytdl-core');
 
-    // let source_file_name = "";
-    let destination_blob_name = "Audios/audiotest.flac"
-    // let url_address = "https://www.youtube.com/watch?v=XBsdkAzB4qQ";
-    let url_address = req.query.url_address;
-    url_address = encodeURIComponent(url_address);
-    console.log("url_address");
-    console.log("url_address");
-    console.log("url_address");
-    console.log(url_address);
+    let extractAudio = (url) => {
+      return new Promise(
+        (resolve, reject) => {
 
-    let req_address = "http://cognitiva-video-converter.mybluemix.net/upload?bucket_name="+bucket_name+"&url_address="+encodeURIComponent(url_address);
-    console.log(req_address);
+          let youtube = ytdl(url,{
+            filter: "audioonly"
+          }).pipe(fs.createWriteStream(audioFileName));
 
-    //Tiro mi video al servicio de Python para extraer audio, convertirlo y subirlo a GCS
-    request
-      // .get(req_address)
-      .get(`https://127.0.0.1:5000/upload?bucket_name=${bucket_name}&url_address=${url_address}`)
-      .on('error', function(err) {
-        console.log(err);
-      })
-      .on('response', function(response) {
-        console.log(response.statusCode) // 200
-        console.log(response.headers['content-type']) // 'image/png'
-        console.log(JSON.stringify(response,null,2));
-
-
-      })
-      */
-
-      let audioFileName = 'public/audios/audio-'+Date.now()+'.aac';
-      // let audioFileName = 'public/audios/audio-upload.aac';
-      const ytdl = require('ytdl-core');
-
-      let extractAudio = (url) => {
-        return new Promise(
-          (resolve, reject) => {
-
-            let youtube = ytdl(url,{
-              filter: "audioonly"
-            }).pipe(fs.createWriteStream(audioFileName));
-
-            youtube.on('finish',function() {
-              console.log("Finished extracting audio");
-              resolve();
-            })
-
-
+          youtube.on('finish',function() {
+            console.log("Finished extracting audio");
+            resolve();
           })
 
-      }
 
-      let flacFilePathName = 'public/audios/audio-'+Date.now()+'.flac';
-      let flacFileName = flacFilePathName.split("/")[flacFilePathName.split("/").length-1];
+        })
 
-      let convertAudio = () => {
-        return new Promise(
-          (resolve, reject) => {
-            const ffmpeg = require('ffmpeg');
-            try {
-              var process = new ffmpeg(audioFileName);
-              process.then(function (video) {
-                // Callback mode
-                video
-                .setAudioCodec('flac')
-                // .setAudioFrequency(48,function(error,file){
-                .setAudioChannels(1)
-                .save(flacFilePathName, function (error, file) {
-                  if (!error)
-                  console.log('Converted audio file: ' + file);
-                  console.log('Deleting old file:' + audioFileName);
-                  fs.unlink(audioFileName,function(){
-                    console.log("Deleted file");
-                  })
-                  resolve();
-                });
-              }, function (err) {
-                console.log('Error: ' + err);
-                reject("Error on process");
-              });
-            } catch (e) {
-              console.log(e.code);
-              console.log(e.msg);
-              reject("Error on try process");
-            }
-          })
-      }
+    }
 
-      let bucket = gcs.bucket('clarin-videos');
-      let uploadGCS = () => {
-        return new Promise(
-          (resolve, reject) => {
-            //Uploads the file
-            bucket.upload(flacFilePathName, function(err, file) {
-              if (!err) {
-                console.log(`Uploaded ${file} to GCS`);
+    let flacFilePathName = 'public/audios/audio-'+Date.now()+'.flac';
+    let flacFileName = flacFilePathName.split("/")[flacFilePathName.split("/").length-1];
+    let googleFlacFilePath = 'gs://clarin-videos/'+flacFileName;
 
-                // Makes the file public
-                gcs
-                  .bucket('clarin-videos')
-                  .file(flacFileName)
-                  .makePublic();
-
-                  console.log('Deleting old flac file:' + flacFilePathName);
-                  fs.unlink(flacFilePathName,function(){
-                    console.log("Deleted FLAC file");
-                    resolve();
-                  })
-
-
-              }else{
-                console.log("There was an error uploading the file");
-                console.log(err);
-              }
-
-            });
-
-          })
-        }
-
-
-      extractAudio(unencoded_url_address)
-        .then(() => {
-          convertAudio()
-            .then(() => {
-              uploadGCS()
-                .then(() => {
-                  speechRecognition();
+    let convertAudio = () => {
+      return new Promise(
+        (resolve, reject) => {
+          const ffmpeg = require('ffmpeg');
+          try {
+            var process = new ffmpeg(audioFileName);
+            process.then(function (video) {
+              // Callback mode
+              video
+              .setAudioCodec('flac')
+              // .setAudioFrequency(48,function(error,file){
+              .setAudioChannels(1)
+              .save(flacFilePathName, function (error, file) {
+                if (!error)
+                console.log('Converted audio file: ' + file);
+                console.log('Deleting old file:' + audioFileName);
+                fs.unlink(audioFileName,function(){
+                  console.log("Deleted file");
                 })
-            })
+                resolve();
+              });
+            }, function (err) {
+              console.log('Error: ' + err);
+              reject("Error on process");
+            });
+          } catch (e) {
+            console.log(e.code);
+            console.log(e.msg);
+            reject("Error on try process");
+          }
+        })
+    }
+
+    let bucket = gcs.bucket('clarin-videos');
+    let uploadGCS = () => {
+      return new Promise(
+        (resolve, reject) => {
+          //Uploads the file
+          bucket.upload(flacFilePathName, function(err, file) {
+            if (!err) {
+              console.log(`Uploaded ${file} to GCS`);
+
+              // Makes the file public
+              gcs
+                .bucket('clarin-videos')
+                .file(flacFileName)
+                .makePublic();
+
+                console.log('Deleting old flac file:' + flacFilePathName);
+                fs.unlink(flacFilePathName,function(){
+                  console.log("Deleted FLAC file");
+                  resolve();
+                })
+
+
+            }else{
+              console.log("There was an error uploading the file");
+              console.log(err);
+            }
+
+          });
 
         })
-        .catch((e) => {
-          console.log(e);
-        })
+      }
 
 
+    extractAudio(unencoded_url_address)
+      .then(() => {
+        convertAudio()
+          .then(() => {
+            uploadGCS()
+              .then(() => {
+                speechRecognition();
+              })
+          })
 
-
-
-
-
-
+      })
+      .catch((e) => {
+        console.log(e);
+      })
 
     let googleNLUPromise = (text) => {
       return new Promise(
@@ -222,14 +183,6 @@ router.get('/api/google-speech-to-text', function (req, res) {//solo para prueba
 
               console.log('Entities:');
               console.log(entities);
-
-              // entities.forEach((entity) => {
-              //   console.log(entity.name);
-              //   console.log(` - Type: ${entity.type}, Salience: ${entity.salience}`);
-              //   if (entity.metadata && entity.metadata.wikipedia_url) {
-              //     console.log(` - Wikipedia URL: ${entity.metadata.wikipedia_url}$`);
-              //   }
-              // });
               resolve(entities);
             })
             .catch((err) => {
@@ -261,23 +214,34 @@ router.get('/api/google-speech-to-text', function (req, res) {//solo para prueba
       )
     }
 
-
     let speechRecognition = () => {
-      console.log("Entre a speech recognition");
+      console.log("\n\n\nPerforming speech recognition:\n\n");
       let analyzedText = {};
       return new Promise(
         (resolve, reject) => {
 
           // Detects speech in the audio file
-          speechClient.startRecognition(flacFileName, options)
+          speechClient.startRecognition(googleFlacFilePath, options)
           .then((results) => {
 
             const operation = results[0];
             return operation.promise();
+
+
+
           })
           .then((results) => {
+            // Deletes the GCS flac file
+            gcs
+              .bucket('clarin-videos')
+              .file(flacFileName)
+              .delete()
+              .then(() => {
+                console.log("\n\nDeleting the flac GCS file........");
+                console.log(`gs://clarin-videos/${flacFileName} deleted.\n`);
+              })
             const transcription = results[0]
-            console.log(`Transcription: ${transcription}`);
+            console.log(`Transcription: ${transcription}\n`);
             let parameters = {
               'text': transcription,
               'features': {
@@ -298,13 +262,13 @@ router.get('/api/google-speech-to-text', function (req, res) {//solo para prueba
             googleNLUPromise(parameters.text)
               .then((results) => {
                 analyzedText.google = results;
-                console.log("Inside Google Promise:");
-                console.log(analyzedText);
+                // console.log("Inside Google Promise:");
+                // console.log(analyzedText);
                 watsonNLUPromise(parameters)
                 .then((response) => {
                   analyzedText.watson = response;
-                  console.log("Inside NLU Promise:");
-                  console.log(analyzedText);
+                  // console.log("Inside NLU Promise:");
+                  // console.log(analyzedText);
                   res.send(analyzedText);
                 });
               })
