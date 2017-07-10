@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Theme Made By www.w3schools.com - No Copyright -->
+  <title>Generador automático de tags en videos</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
+  <script src="javascripts/d3-cloud.js"></script>
+  <style>
+  body {
+      font: 20px Montserrat, sans-serif;
+      line-height: 1.8;
+      color: #f5f6f7;
+  }
+  p {font-size: 16px;}
+  .margin {margin-bottom: 45px;}
+  .bg-1 {
+      background-color: #1abc9c; /* Green */
+      color: #ffffff;
+  }
+  .bg-2 {
+      background-color: #474e5d; /* Dark Blue */
+      color: #ffffff;
+  }
+  .bg-3 {
+      background-color: #ffffff; /* White */
+      color: #555555;
+  }
+  .bg-4 {
+      background-color: #2f2f2f; /* Black Gray */
+      color: #fff;
+  }
+  .container-fluid {
+      padding-top: 70px;
+      padding-bottom: 70px;
+  }
+  .navbar {
+      padding-top: 15px;
+      padding-bottom: 15px;
+      border: 0;
+      border-radius: 0;
+      margin-bottom: 0;
+      font-size: 12px;
+      letter-spacing: 5px;
+  }
+  .navbar-nav  li a:hover {
+      color: #1abc9c !important;
+  }
+
+  .input-group{
+    width: 70%;
+    margin: 0 auto;
+  }
+
+  .loaderWatson{
+    width:160px;
+    height:auto;
+    margin: 0 auto;
+  }
+  </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-default">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">Cognitiva</a>
+    </div>
+    <div class="collapse navbar-collapse" id="myNavbar">
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="#">Generador automático de tags en videos</a></li>
+        <!-- <li><a href="#">WHAT</a></li>
+        <li><a href="#">WHERE</a></li> -->
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- First Container -->
+<div class="container-fluid bg-1 text-center">
+  <h3 class="margin">Cargá una URL de YouTube</h3>
+  <!-- <img src="bird.jpg" class="img-responsive img-circle margin" style="display:inline" alt="Bird" width="350" height="350"> -->
+  <div class="input-group">
+    <input type="text" class="form-control" placeholder="Ejemplo: https://www.youtube.com/watch?v=NEdq6uKV-a8">
+    <span class="input-group-btn">
+      <button class="btn btn-default" type="button" onclick="extractTags()">
+        <span class="glyphicon glyphicon-search"></span>
+      </button>
+    </span>
+  </div>
+</div>
+
+<!-- Second Container -->
+<div class="container-fluid bg-2 text-center">
+  <!-- <h3 class="margin">What Am I?</h3> -->
+  <div class="actualyoutube">
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/IfNiuh-_bRo" frameborder="0" allowfullscreen></iframe>
+
+  </div>
+</div>
+
+<!-- Third Container (Grid) -->
+<div class="container-fluid bg-3 text-center">
+  <h3 class="margin">Tags generados</h3><br>
+  <div class="row">
+    <div class="col-sm-4">
+      <h3 id="conceptos">Conceptos</h3>
+      <ul>
+
+      </ul>
+      <!-- <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p> -->
+      <!-- <img src="images/loader.gif" class="img-responsive margin loaderWatson" style="width:100%;display:none"> -->
+    </div>
+    <div class="col-sm-4">
+      <h3>Entidades</h3>
+      <ul id="entidades">
+
+      </ul>
+      <!-- <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p> -->
+      <img src="images/loader.gif" class="img-responsive margin loaderWatson" style="display:none">
+    </div>
+    <div class="col-sm-4">
+      <h3>Keywords</h3>
+      <ul id="keywords">
+
+      </ul>
+      <!-- <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p> -->
+      <!-- <img src="images/loader.gif" class="img-responsive margin loaderWatson" style="width:100%;display:none"> -->
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid bg-3 text-center" id="divSvg"></div>
+<!-- Footer -->
+<footer class="container-fluid bg-4 text-center">
+  <p><a href="http://www.cognitiva.la">Cognitiva</a> | IBM Watson Strategic Partner</p>
+</footer>
+
+<script src="javascripts/functions.js">
+
+</script>
+</body>
+</html>
