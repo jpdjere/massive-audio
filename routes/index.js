@@ -28,6 +28,7 @@ require('dotenv').config({silent: true});
 
 // Your Google Cloud Platform project ID
 const projectId = process.env.GCLOUD_PROJECT;
+const bucket_name = process.env.BUCKET_NAME;
 
 // The audio file's encoding, sample rate in hertz, and BCP-47 language code
 const options = {
@@ -88,7 +89,7 @@ router.get('/api/google-speech-to-text', function (req, res) {//solo para prueba
 
     let flacFilePathName = 'public/audios/audio-'+Date.now()+'.flac';
     let flacFileName = flacFilePathName.split("/")[flacFilePathName.split("/").length-1];
-    let googleFlacFilePath = 'gs://clarin-videos/'+flacFileName;
+    let googleFlacFilePath = `gs://${bucket_name}/`+flacFileName;
 
     let convertAudio = () => {
       return new Promise(
@@ -123,7 +124,7 @@ router.get('/api/google-speech-to-text', function (req, res) {//solo para prueba
         })
     }
 
-    let bucket = gcs.bucket('clarin-videos');
+    let bucket = gcs.bucket(bucket_name);
     let uploadGCS = () => {
       return new Promise(
         (resolve, reject) => {
@@ -134,7 +135,7 @@ router.get('/api/google-speech-to-text', function (req, res) {//solo para prueba
 
               // Makes the file public
               gcs
-                .bucket('clarin-videos')
+                .bucket(bucket_name)
                 .file(flacFileName)
                 .makePublic();
 
@@ -231,31 +232,36 @@ router.get('/api/google-speech-to-text', function (req, res) {//solo para prueba
 
           })
           .then((results) => {
+            console.log("\n\nLos resultados son:\n")
+            console.log(results)
             // Deletes the GCS flac file
             gcs
-              .bucket('clarin-videos')
+              .bucket(bucket_name)
               .file(flacFileName)
               .delete()
               .then(() => {
                 console.log("\n\nDeleting the flac GCS file........");
-                console.log(`gs://clarin-videos/${flacFileName} deleted.\n`);
+                console.log(`gs://${bucket_name}/${flacFileName} deleted.\n`);
               })
+
             const transcription = results[0]
             console.log(`Transcription: ${transcription}\n`);
+            analyzedText.transcription = transcription;
+
             let parameters = {
               'text': transcription,
               'features': {
                 'entities': {
-                  'emotion': true,
-                  'sentiment': false
+                  // 'emotion': true,
+                  // 'sentiment': false
                 },
                 'keywords': {
-                  'emotion': true,
-                  'sentiment': false
+                  // 'emotion': true,
+                  // 'sentiment': false
                 },
                 'concepts': {
-                  'emotion': true,
-                  'sentiment': false
+                  // 'emotion': true,
+                  // 'sentiment': false
                 }
               }
             }

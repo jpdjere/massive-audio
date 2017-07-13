@@ -5,3 +5,4 @@ applications:
   domain: mybluemix.net
   name: generador-tags-videos
   host: generador-tags-videos
+  buildpack: https://github.com/BlueChasm/nodejs-buildpack-ffmpeg.git
